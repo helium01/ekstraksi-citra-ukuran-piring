@@ -79,7 +79,13 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % menampilkan pencarian gambar di dalam local komputer
-[nama_file,nama_folder]=uigetfile('*,.jpg,.png,.jpeg');
+[nama_file,nama_folder]=uigetfile(...
+    {'*.bmp; *.jpeg; *.png; *.jpg', 'File citra (*.bmp, *.jpg, *.png)';
+    '*.bmp' , 'File Bitmap(*.bmp)';
+    '*.png' , 'File Png(*.png)';
+    '*.jpg' , 'File Jpeg (*.jpg)';
+    '*.*', 'Semua File (*.*)'},...
+    'Buka Citra asli');
 
 %jika ada nama file yang terpilih maka akan mengeksekusi percabanan ini
 if ~isequal(nama_file,0)
@@ -107,16 +113,20 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 
 %melakukan ekstraksi
 ekstrak_citra=handles.citra;
+%konversi ke hav
 ekstrak_citra=rgb2hsv(ekstrak_citra);
 h=ekstrak_citra(:,:,1);
 s=ekstrak_citra(:,:,2);
 v=ekstrak_citra(:,:,3);
+%konversi ke binary dengan mengambil nilai citra saturation
 binary_citra=im2bw(s,.25);
 binary_citra=imfill(binary_citra,'holes');
 binary_citra=bwareaopen(binary_citra,100);
+%menampilkan citra binary ke dalam axes 2
 axes(handles.axes2)
 imshow(binary_citra)
 title('citra binary')
+%membaca ukuran citra berdasarkan nilai binary
 [bonding,long]=bwboundaries(binary_citra,'noholes');
 stats=regionprops(long,'ALL')
 perimeter=cat(1,stats.Perimeter);
